@@ -7,16 +7,33 @@ const AuthClientPage = () => {
 
   const [isloading, setIsLoading] = useState(true)
   const [error, setError] = useState("")
+  const [isSignedIn, setIsSignedIn] = useState(true)
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [name, setName] = useState("")
+
+
 
 
 
   const handleEmailAuth = async (e: React.FormEvent) => {
+
     e.preventDefault()
     setIsLoading(true)
     setError("")
 
-    
-
+    try {
+      if (isSignedIn) {
+        console.log("signed in!")
+      } else {
+        console.log("signed up!")
+      }
+    } catch (error) {
+      setError(`Authentication Error: ${error instanceof Error ? error.message : "Unknown error!"
+        }`)
+    } finally {
+      setIsLoading(false)
+    }
 
   }
 
