@@ -1,8 +1,9 @@
 "use server"
 
+import { headers } from "next/headers"
 import { auth } from "../auth"
 
-export const signup = async (email: string, password: string, name: string) => {
+export const signUp = async (email: string, password: string, name: string) => {
     const result = auth.api.signUpEmail({
         body: {
             email,
@@ -15,7 +16,7 @@ export const signup = async (email: string, password: string, name: string) => {
     return result
 }
 
-export const sigin = async (email: string, password: string) => {
+export const signIn = async (email: string, password: string) => {
     const result = auth.api.signInEmail({
         body: {
             email,
@@ -23,6 +24,12 @@ export const sigin = async (email: string, password: string) => {
             callbackURL: ("/dashboard"),
         }
     })
+
+    return result
+}
+
+export const signOut = async () => {
+    const result = auth.api.signOut({ headers: await headers() })
 
     return result
 }
