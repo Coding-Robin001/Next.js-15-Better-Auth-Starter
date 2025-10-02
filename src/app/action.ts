@@ -1,6 +1,6 @@
 "use server";
 
-import { prisma } from "../utils/prisma"; 
+import { prisma } from "../lib/prisma"; 
 
 export async function addUser(formData: FormData) {
   const email = formData.get("email")?.toString();
