@@ -4,32 +4,49 @@ import { headers } from "next/headers"
 import { auth } from "../auth"
 
 export const signUp = async (email: string, password: string, name: string) => {
-    const result = auth.api.signUpEmail({
-        body: {
-            email,
-            password,
-            name,
-            callbackURL: ("/dashboard"),
-        }
+  try {
+    const result = await auth.api.signUpEmail({
+      body: {
+        email,
+        password,
+        name,
+        callbackURL: "/dashboard",
+      },
     })
-
     return result
+  } catch (err: any) {
+    console.error("SignUp Error:", err)
+    
+    if (err.statusCode === 422) {
+      throw new Error("This email is already registered. Please sign in instead.")
+    }
+    throw new Error("Sign up failed. Please try again.")
+  }
 }
 
 export const signIn = async (email: string, password: string) => {
-    const result = auth.api.signInEmail({
-        body: {
-            email,
-            password,
-            callbackURL: ("/dashboard"),
-        }
+  try {
+    const result = await auth.api.signInEmail({
+      body: {
+        email,
+        password,
+        callbackURL: "/dashboard",
+      },
     })
-
     return result
+  } catch (err: any) {
+    if (err.statusCode === 401) {
+      throw new Error("Invalid email or password.")
+    }
+    throw new Error("Sign in failed. Please try again.")
+  }
 }
 
 export const signOut = async () => {
-    const result = auth.api.signOut({ headers: await headers() })
-
+  try {
+    const result = await auth.api.signOut({ headers: await headers() })
     return result
+  } catch {
+    throw new Error("Sign out failed.")
+  }
 }

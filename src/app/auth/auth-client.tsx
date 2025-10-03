@@ -1,52 +1,89 @@
-// src/components/AuthClientPage.tsx
-"use client";
+"use client"
 
+import { signIn, signUp } from "@/lib/actions/auth-actions";
+import { redirect } from "next/dist/server/api-utils";
 import React, { useState } from "react";
 
 const AuthClientPage = () => {
+  const [isSignIn, setIsSignIn] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
-  const [isloading, setIsLoading] = useState(true)
-  const [error, setError] = useState("")
-  const [isSignedIn, setIsSignedIn] = useState(true)
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [name, setName] = useState("")
+  // form fields
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
 
+  // error states
+  const [errors, setErrors] = useState<{ email?: string; password?: string; name?: string; general?: string }>({});
 
+  const validateForm = () => {
+    const newErrors: typeof errors = {};
 
-
-
-  const handleEmailAuth = async (e: React.FormEvent) => {
-
-    e.preventDefault()
-    setIsLoading(true)
-    setError("")
-
-    try {
-      if (isSignedIn) {
-        console.log("signed in!")
-      } else {
-        console.log("signed up!")
-      }
-    } catch (error) {
-      setError(`Authentication Error: ${error instanceof Error ? error.message : "Unknown error!"
-        }`)
-    } finally {
-      setIsLoading(false)
+    if (!isSignIn && !name.trim()) {
+      newErrors.name = "Full name is required";
     }
 
-  }
+    if (!email.trim()) {
+      newErrors.email = "Email is required";
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      newErrors.email = "Enter a valid email address";
+    }
 
+    if (!password.trim()) {
+      newErrors.password = "Password is required";
+    } else if (password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleAuth = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validateForm()) return; // stop if validation fails
+
+    setIsLoading(true);
+    setErrors({});
+
+    try {
+      if (isSignIn) {
+        const result = await signIn(email, password);
+        if (!result.user) {
+          setErrors({ general: "Invalid email or password!" });
+        }
+        alert("signedin!")
+        // redirect("/dashboard")
+      } else {
+        const result = await signUp(email, password, name);
+        if (!result.user) {
+          setErrors({ general: "Failed to create account!" });
+        }
+      }
+    } catch (error) {
+      setErrors({
+        general: `Authentication Error: ${error instanceof Error ? error.message : "Unknown error!"
+          }`,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-md">
         {/* Title */}
         <div className="flex justify-center mb-6">
-          <span className="text-2xl font-bold">Welcome Back</span>
+          <span className="text-2xl font-bold">
+            {isSignIn ? "Welcome Back" : "Create Account"}
+          </span>
         </div>
         <p className="text-center text-gray-500 mb-6">
-          Sign in to your account to continue
+          {isSignIn
+            ? "Sign in to your account to continue"
+            : "Create an account to get started"}
         </p>
 
         {/* Social Buttons */}
@@ -103,16 +140,45 @@ const AuthClientPage = () => {
         </div>
 
         {/* Email & Password */}
-        <form className="space-y-4">
+        <form className="space-y-4" onSubmit={handleAuth}>
+          {!isSignIn && (
+            <div>
+              <label className="text-sm font-medium text-gray-700">
+                Full Name
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                placeholder="Enter your full name"
+                className={`mt-1 w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 ${errors.name
+                  ? "border-red-500 focus:ring-red-500"
+                  : "border-gray-300 focus:ring-indigo-500"
+                  }`}
+              />
+              {errors.name && (
+                <p className="mt-1 text-sm text-red-500">{errors.name}</p>
+              )}
+            </div>
+          )}
+
           <div>
             <label className="text-sm font-medium text-gray-700">
               Email address
             </label>
             <input
               type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email"
-              className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className={`mt-1 w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 ${errors.email
+                ? "border-red-500 focus:ring-red-500"
+                : "border-gray-300 focus:ring-indigo-500"
+                }`}
             />
+            {errors.email && (
+              <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+            )}
           </div>
 
           <div>
@@ -121,25 +187,44 @@ const AuthClientPage = () => {
             </label>
             <input
               type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
               placeholder="Enter your password"
-              className="mt-1 w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+              className={`mt-1 w-full border rounded-lg px-3 py-2 focus:outline-none focus:ring-2 ${errors.password
+                ? "border-red-500 focus:ring-red-500"
+                : "border-gray-300 focus:ring-indigo-500"
+                }`}
             />
+            {errors.password && (
+              <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+            )}
           </div>
+
+          {errors.general && (
+            <p className="text-sm text-red-500 text-center">
+              {errors.general}
+            </p>
+          )}
 
           <button
             type="submit"
+            disabled={isLoading}
             className="w-full bg-indigo-600 text-white py-2 rounded-lg hover:bg-indigo-700 transition"
           >
-            Sign In
+            {isLoading ? "Loading..." : isSignIn ? "Sign In" : "Create Account"}
           </button>
         </form>
 
-        {/* Sign Up Link */}
+        {/* Footer */}
         <p className="mt-6 text-center text-sm text-gray-600">
-          Don’t have an account?{" "}
-          <a href="#" className="text-indigo-600 hover:underline">
-            Sign up
-          </a>
+          {isSignIn ? "Don’t have an account?" : "Already have an account?"}{" "}
+          <button
+            type="button"
+            onClick={() => setIsSignIn(!isSignIn)}
+            className="text-indigo-600 hover:underline"
+          >
+            {isSignIn ? "Sign up" : "Sign in"}
+          </button>
         </p>
       </div>
     </div>
