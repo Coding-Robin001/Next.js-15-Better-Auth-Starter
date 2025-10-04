@@ -3,15 +3,18 @@
 import React from "react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
+import { auth } from "@/lib/auth"
 
-export default function Navbar() {
+type Session = typeof auth.$Infer.Session
+
+export default function Navbar({ session }: { session: Session | null }) {
+
   const pathname = usePathname()
 
   const navLinks = [
     { name: "Home", href: "/" },
-    { name: "Dashboard", href: "/dashboard" },
-    { name: "Login", href: "/login" },
-  ]
+    ...session ? [{ name: "Dashboard", href: "/dashboard" }] : [],
+    ...(session ? [] : [{ name: "Login", href: "/login" }]),]
 
   return (
     <header className="w-full bg-black text-white shadow-md">
@@ -32,11 +35,10 @@ export default function Navbar() {
               <li key={index}>
                 <Link
                   href={link.href}
-                  className={`transition-colors duration-200 ${
-                    active
-                      ? "text-indigo-400 font-semibold border-b-2 border-indigo-400 pb-1"
-                      : "hover:text-indigo-300"
-                  }`}
+                  className={`transition-colors duration-200 ${active
+                    ? "text-indigo-400 font-semibold border-b-2 border-indigo-400 pb-1"
+                    : "hover:text-indigo-300"
+                    }`}
                 >
                   {link.name}
                 </Link>

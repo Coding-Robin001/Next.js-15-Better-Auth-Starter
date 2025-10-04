@@ -1,7 +1,6 @@
 "use client"
 
 import { signIn, signUp } from "@/lib/actions/auth-actions";
-import { redirect } from "next/dist/server/api-utils";
 import React, { useState } from "react";
 
 const AuthClientPage = () => {
