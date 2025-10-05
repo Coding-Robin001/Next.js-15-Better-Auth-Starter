@@ -1,6 +1,18 @@
 "use client";
 
+import { signOut } from "@/lib/actions/auth-actions";
+import { useRouter } from "next/navigation";
+
 const DashboardClientPage = () => {
+
+  const router = useRouter()
+
+  const handleSignOut = async () => {
+    await signOut()
+    router.push("/auth")
+  }
+
+
   return (
     <div className="p-6 space-y-6">
       {/* Welcome Section */}
@@ -16,7 +28,10 @@ const DashboardClientPage = () => {
             <p className="font-medium">John Doe</p>
             <p className="text-sm text-gray-500">email@gmail.com</p>
           </div>
-          <button className="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-100 transition">
+          <button
+            className="px-4 py-2 border rounded-lg text-gray-700 hover:bg-gray-100 transition cursor-pointe"
+            onClick={handleSignOut}
+          >
             Sign Out
           </button>
         </div>
