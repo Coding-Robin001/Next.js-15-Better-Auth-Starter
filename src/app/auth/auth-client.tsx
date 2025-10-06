@@ -1,7 +1,8 @@
 "use client"
 
-import { signIn, signUp } from "@/lib/actions/auth-actions";
+import { signIn, signInSocial, signUp } from "@/lib/actions/auth-actions";
 import React, { useState } from "react";
+import { redirect } from "next/navigation";
 
 const AuthClientPage = () => {
   const [isSignIn, setIsSignIn] = useState(true);
@@ -52,8 +53,7 @@ const AuthClientPage = () => {
         if (!result.user) {
           setErrors({ general: "Invalid email or password!" });
         }
-        alert("signedin!")
-        // redirect("/dashboard")
+        redirect("/dashboard")
       } else {
         const result = await signUp(email, password, name);
         if (!result.user) {
@@ -69,6 +69,26 @@ const AuthClientPage = () => {
       setIsLoading(false);
     }
   };
+
+
+  const handleSocialAuth = async (provider: "google" | "github") => {
+    setIsLoading(true)
+    setErrors({ general: "" })
+    console.log("logged in with:", provider)
+    try {
+      await signInSocial(provider);
+      redirect("/dashboard")
+
+    } catch (error) {
+      setErrors({
+        general: `Error Authenticating with ${provider} : ${error instanceof Error ? error.message : "Unknown error!"
+          }`,
+      });
+    } finally {
+      setIsLoading(false);
+    }
+
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">

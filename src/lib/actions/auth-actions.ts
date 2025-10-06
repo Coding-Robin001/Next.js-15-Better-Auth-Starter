@@ -2,6 +2,7 @@
 
 import { headers } from "next/headers"
 import { auth } from "../auth"
+import { redirect } from "next/navigation"
 
 export const signUp = async (email: string, password: string, name: string) => {
   try {
@@ -16,7 +17,7 @@ export const signUp = async (email: string, password: string, name: string) => {
     return result
   } catch (err: any) {
     console.error("SignUp Error:", err)
-    
+
     if (err.statusCode === 422) {
       throw new Error("This email is already registered. Please sign in instead.")
     }
@@ -34,6 +35,25 @@ export const signIn = async (email: string, password: string) => {
       },
     })
     return result
+  } catch (err: any) {
+    if (err.statusCode === 401) {
+      throw new Error("Invalid email or password.")
+    }
+    throw new Error("Sign in failed. Please try again.")
+  }
+}
+
+export const signInSocial = async (provider: "google" | "github") => {
+  try {
+    const { url } = await auth.api.signInSocial({
+      body: {
+        provider,
+        callbackURL: "/dashboard",
+      },
+    })
+    if (url) {
+      redirect(url)
+    }
   } catch (err: any) {
     if (err.statusCode === 401) {
       throw new Error("Invalid email or password.")
