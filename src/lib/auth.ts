@@ -6,6 +6,8 @@ import { nextCookies } from "better-auth/next-js"
 
 export const auth = betterAuth({
 
+    baseURL: process.env.BETTER_AUTH_URL || "http://localhost:3000",
+
     database: prismaAdapter(prisma, { provider: "sqlite" }),
 
     emailAndPassword: {
@@ -21,5 +23,9 @@ export const auth = betterAuth({
             clientSecret: process.env.GOOGLE_CLIENT_SECRET as string
         }
     },
-    plugins: [nextCookies()]
+    plugins: [nextCookies()],
+    redirect: {
+        afterSignIn: "/dashboard", // 👈 redirect after login
+        afterSignUp: "/dashboard",
+    },
 })

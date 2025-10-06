@@ -14,7 +14,7 @@ export default function Navbar({ session }: { session: Session | null }) {
   const navLinks = [
     { name: "Home", href: "/" },
     ...session ? [{ name: "Dashboard", href: "/dashboard" }] : [],
-    ...(session ? [] : [{ name: "Login", href: "/login" }]),]
+    ...(session ? [] : [{ name: "Login", href: "/auth" }]),]
 
   return (
     <header className="w-full bg-black text-white shadow-md">

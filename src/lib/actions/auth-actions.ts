@@ -43,24 +43,18 @@ export const signIn = async (email: string, password: string) => {
   }
 }
 
+
 export const signInSocial = async (provider: "google" | "github") => {
-  try {
-    const { url } = await auth.api.signInSocial({
-      body: {
-        provider,
-        callbackURL: "/dashboard",
-      },
-    })
-    if (url) {
-      redirect(url)
-    }
-  } catch (err: any) {
-    if (err.statusCode === 401) {
-      throw new Error("Invalid email or password.")
-    }
-    throw new Error("Sign in failed. Please try again.")
-  }
-}
+  const { url } = await auth.api.signInSocial({
+    body: {
+      provider,
+      // callbackURL: `/api/auth/callback/${provider}`,
+    },
+  });
+
+  if (url) redirect(url);
+};
+
 
 export const signOut = async () => {
   try {
