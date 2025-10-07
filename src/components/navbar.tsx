@@ -13,7 +13,7 @@ export default function Navbar({ session }: { session: Session | null }) {
 
   const navLinks = [
     { name: "Home", href: "/" },
-    ...(session ? [{ name: "Dashboard", href: "/dashboard" }] : []),
+    ...(session ? [{ name: "Dashboard", href: "/auth-dashboard" }] : []),
     ...(session ? [] : [{ name: "Login", href: "/auth" }]),
   ]
 

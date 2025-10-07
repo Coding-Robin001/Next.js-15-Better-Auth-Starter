@@ -8,11 +8,20 @@ import { useState } from "react";
 
 type Session = typeof auth.$Infer.Session;
 
-const DashboardClientPage = ({ session }: { session: Session | null }) => {
+const AuthDashboardClient = ({ session }: { session: Session | null }) => {
   const router = useRouter();
   const user = session?.user;
 
   const [copied, setCopied] = useState(false);
+  
+  const modifiedUser = {
+    name: user?.name,
+    email: user?.email,
+    emailVerified: user?.emailVerified,
+    image: user?.image,
+    createdAt: user?.createdAt,
+    updatedAt: user?.updatedAt,
+  }
 
   const handleSignOut = async () => {
     await signOut();
@@ -20,7 +29,7 @@ const DashboardClientPage = ({ session }: { session: Session | null }) => {
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(JSON.stringify(user, null, 2));
+    navigator.clipboard.writeText(JSON.stringify(modifiedUser, null, 2));
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
@@ -45,7 +54,7 @@ const DashboardClientPage = ({ session }: { session: Session | null }) => {
             {/* Avatar or initials */}
             {user?.image ? (
               <Image
-                src={user.image}
+                src={user?.image}
                 alt="User Avatar"
                 width={48}
                 height={48}
@@ -81,9 +90,8 @@ const DashboardClientPage = ({ session }: { session: Session | null }) => {
           <div className="bg-white rounded-xl shadow p-5">
             <h3 className="text-gray-500 text-sm mb-1">Email Verified</h3>
             <p
-              className={`text-lg font-semibold ${
-                user?.emailVerified ? "text-green-600" : "text-red-500"
-              }`}
+              className={`text-lg font-semibold ${user?.emailVerified ? "text-green-600" : "text-red-500"
+                }`}
             >
               {user?.emailVerified ? "Yes" : "No"}
             </p>
@@ -109,7 +117,7 @@ const DashboardClientPage = ({ session }: { session: Session | null }) => {
             </button>
           </div>
           <pre className="bg-gray-100 p-4 rounded-lg text-xs overflow-x-auto text-gray-700">
-            {JSON.stringify(user, null, 2)}
+            {JSON.stringify(modifiedUser, null, 2)}
           </pre>
         </div>
 
@@ -169,4 +177,4 @@ const DashboardClientPage = ({ session }: { session: Session | null }) => {
   );
 };
 
-export default DashboardClientPage;
+export default AuthDashboardClient;
