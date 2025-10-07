@@ -2,7 +2,6 @@
 
 import { signIn, signInSocial, signUp } from "@/lib/actions/auth-actions";
 import React, { useState } from "react";
-import { redirect } from "next/navigation";
 
 const AuthClientPage = () => {
   const [isSignIn, setIsSignIn] = useState(true);
@@ -85,17 +84,21 @@ const AuthClientPage = () => {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
       <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-md">
+        
         {/* Title */}
         <div className="flex justify-center mb-6">
           <span className="text-2xl font-bold">
             {isSignIn ? "Welcome Back" : "Create Account"}
           </span>
         </div>
+
+        {/* text */}
         <p className="text-center text-gray-500 mb-6">
           {isSignIn
             ? "Sign in to your account to continue"
             : "Create an account to get started"}
         </p>
+
         {/* Social Buttons */}
         <div className="space-y-3">
           {/* Google Button */}
@@ -185,7 +188,7 @@ const AuthClientPage = () => {
           <div className="flex-1 h-px bg-gray-300" />
         </div>
 
-        {/* Email & Password */}
+        {/* Email & Password form*/}
         <form className="space-y-4" onSubmit={handleAuth}>
           {!isSignIn && (
             <div>
@@ -252,6 +255,7 @@ const AuthClientPage = () => {
             </p>
           )}
 
+          {/* submit button email & password */}
           <button
             type="submit"
             disabled={isLoading}
@@ -284,6 +288,7 @@ const AuthClientPage = () => {
             {isSignIn ? "Sign up" : "Sign in"}
           </button>
         </p>
+
       </div>
     </div>
   );
