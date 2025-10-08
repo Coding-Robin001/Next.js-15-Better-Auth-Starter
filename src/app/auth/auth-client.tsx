@@ -58,6 +58,7 @@ const AuthClientPage = () => {
         if (!result.user) {
           setErrors({ general: "Failed to create account!" });
         }
+        setIsSignIn(true)
       }
     } catch (error) {
       setErrors({
